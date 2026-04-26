@@ -14,32 +14,37 @@ export default function Login() {
   const handleLogin = async () => {
     setLoading(true);
     setMessage("");
+    const BASE_URL = "https://travel-project-3-yqss.onrender.com";
 
-    try {
-      const res = await fetch("https://travel-project-3-yqss.onrender.com/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+try {
+  const res = await fetch(`${BASE_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
 
-      const data = await res.json();
+  console.log("STATUS:", res.status); // 👈 ADD THIS
 
-      if (!res.ok) {
-        setMessage(data.message || "Login failed");
-        return;
-      }
+  const data = await res.json();
+  console.log("DATA:", data); // 👈 ADD THIS
 
-      localStorage.removeItem("travelBuddyUser");
-      sessionStorage.setItem(
-        "travelBuddyUser",
-        JSON.stringify(data.user || { name: "Traveler", email })
-      );
-      router.push("/profile");
-    } catch {
-      setMessage("Backend is not available right now.");
-    } finally {
+  if (!res.ok) {
+    setMessage(data.message || "Login failed");
+    return;
+  }
+
+  sessionStorage.setItem(
+    "travelBuddyUser",
+    JSON.stringify(data.user || { name: "Traveler", email })
+  );
+
+} catch (err) {
+  console.error("ERROR:", err); // 👈 VERY IMPORTANT
+  setMessage("Backend is not available right now");
+}
+    finally {
       setLoading(false);
     }
   };
